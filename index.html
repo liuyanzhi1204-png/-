@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0E1B33" />
+  <title>青春护航 应急有我</title>
+  <link rel="icon" href="data:," />
+  <!-- 唯一外部样式；无任何第三方库、字体 CDN。星空由 CSS 绘制，实景图来自 photoes/ -->
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+
+  <!-- ========== 载入遮罩：等 storyData.json 就绪，此处不放叙事文案 ========== -->
+  <div class="loader" id="loader"><span class="loader__ring" aria-hidden="true"></span></div>
+
+  <!-- ============================================================
+       封面页：全屏居中 · 渐变星光背景
+       文案全部留空，由 main.js 从 storyData.json 注入
+       ============================================================ -->
+  <section class="cover is-hidden" id="cover">
+    <div class="cover__bg" aria-hidden="true">
+      <span class="cover__stars"></span>
+      <span class="cover__glow cover__glow--a"></span>
+      <span class="cover__glow cover__glow--b"></span>
+      <span class="cover__beam"></span>
+      <!-- 流星雨：每条流星一个 <i>，位置 / 速度 / 疏密全部由 CSS 控制，无需 JS -->
+      <span class="cover__meteors">
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i><i></i>
+      </span>
+      <span class="cover__grain"></span>
+    </div>
+
+    <div class="cover__inner">
+      <p class="cover__kicker" id="coverKicker"></p>
+      <h1 class="cover__title" id="coverTitle"></h1>
+      <span class="cover__rule" aria-hidden="true"></span>
+      <p class="cover__intro" id="coverIntro"></p>
+      <button class="btn btn--primary" id="startBtn" type="button"></button>
+      <p class="cover__hint" id="coverHint"></p>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       漫游主场景：一片星空，八颗星点由星轨相连
+       ============================================================ -->
+  <main class="world is-hidden" id="world">
+
+    <!-- —— 星图：远层星场 + 近层星座，两层以不同系数随鼠标漂移 —— -->
+    <section class="sky" id="sky">
+      <div class="sky__drift sky__drift--far" id="driftFar" aria-hidden="true">
+        <span class="sky__stars sky__stars--far"></span>
+        <span class="sky__stars sky__stars--near"></span>
+        <span class="sky__glow sky__glow--a"></span>
+        <span class="sky__glow sky__glow--b"></span>
+      </div>
+
+      <div class="sky__drift sky__drift--near" id="driftNear">
+        <!-- 星轨：viewBox 用 0-100 百分比坐标，线条由 JS 依 star.x / star.y 生成 -->
+        <svg class="trails" id="trails" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+        <!-- 星点：由 JS 依 storyData.spots 生成 -->
+        <div class="stars" id="stars"></div>
+      </div>
+
+      <span class="sky__grain" aria-hidden="true"></span>
+    </section>
+
+    <!-- —— HUD：左上标题 + 右上进度 —— -->
+    <div class="hud">
+      <span class="hud__title" id="worldTitle"></span>
+      <span class="hud__progress" id="progressText"></span>
+    </div>
+
+    <!-- —— 底部毛玻璃文字面板（移动端变抽屉）—— -->
+    <section class="panel" id="panel">
+      <span class="panel__handle" id="panelHandle" role="button" tabindex="0" aria-label="展开或收起文字面板"></span>
+      <header class="panel__head">
+        <span class="panel__scene" id="panelScene"></span>
+        <span class="panel__name" id="panelName"></span>
+        <span class="panel__chevron" aria-hidden="true"></span>
+      </header>
+      <div class="panel__body">
+        <div class="panel__inner">
+          <!-- 叙事：40ms/字逐字写入，末尾带闪烁下划线光标 -->
+          <p class="panel__narrative" id="lineNarrative"></p>
+          <!-- 科普：叙事结束后整体出现（平切，不做淡入） -->
+          <div class="panel__tipbox" id="tipBox">
+            <span class="panel__badge" id="tipBadge"></span>
+            <p class="panel__tip" id="lineTip"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- —— 底部应急蓝细进度条 —— -->
+    <div class="railbar" aria-hidden="true"><span class="railbar__fill" id="progressBar"></span></div>
+
+    <!-- —— 大图片卡片：从被点击的星点位置弹性弹出，点任意处关闭 —— -->
+    <div class="bigcard is-hidden" id="bigcard" role="dialog" aria-modal="true" aria-label="点位图片">
+      <div class="bigcard__mask" aria-hidden="true"></div>
+      <figure class="bigcard__card" id="bigcardCard">
+        <img class="bigcard__img" id="bigcardImg" alt="" />
+        <div class="bigcard__ph is-hidden" id="bigcardPh">
+          <span class="bigcard__phtext" id="bigcardPhText"></span>
+        </div>
+      </figure>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       结尾总结：8 颗星全部点亮后居中弹出，标题与正文逐字打出
+       ============================================================ -->
+  <div class="ending is-hidden" id="ending">
+    <div class="ending__mask" aria-hidden="true"></div>
+    <div class="ending__card" role="dialog" aria-modal="true" aria-labelledby="endingTitle">
+      <p class="ending__kicker" id="endingKicker"></p>
+      <h2 class="ending__title" id="endingTitle"></h2>
+      <div class="ending__body" id="endingBody"></div>
+      <button class="btn btn--ghost" id="restartBtn" type="button"></button>
+    </div>
+  </div>
+
+  <!-- ========== 错误层：storyData.json 读取失败时（如 file:// 直开） ========== -->
+  <div class="fatal is-hidden" id="fatal">
+    <div class="fatal__card">
+      <h2 class="fatal__title" id="fatalTitle"></h2>
+      <p class="fatal__msg" id="fatalMsg"></p>
+      <pre class="fatal__code" id="fatalCode"></pre>
+    </div>
+  </div>
+
+  <script src="./main.js"></script>
+</body>
+</html>
