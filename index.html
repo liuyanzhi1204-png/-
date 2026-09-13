@@ -2,134 +2,179 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0E1B33" />
-  <title>青春护航 应急有我</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UI 收录 · 整体 UI 方案对比</title>
   <link rel="icon" href="data:," />
-  <!-- 唯一外部样式；无任何第三方库、字体 CDN。星空由 CSS 绘制，实景图来自 photoes/ -->
-  <link rel="stylesheet" href="./style.css" />
+  <!-- 画廊自身的框架样式（中性灰，不干扰任何一套风格的判断） -->
+  <link rel="stylesheet" href="./gallery.css" />
+  <!-- ★ 核心资产：5 套风格的 token 与作用域样式，改这里即可调整任一方案 -->
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
 
-  <!-- ========== 载入遮罩：等 storyData.json 就绪，此处不放叙事文案 ========== -->
-  <div class="loader" id="loader"><span class="loader__ring" aria-hidden="true"></span></div>
+  <!-- ============================================================
+       页头：说明这个文件夹是干什么的
+       ============================================================ -->
+  <header class="hd">
+    <div>
+      <p class="hd__kicker">UI 收录 · 长卷漫游项目</p>
+      <h1 class="hd__title">整体 UI 方案对比</h1>
+    </div>
+    <p class="hd__note">
+      下面是同一套界面结构、同一批文案，分别套上 5 套视觉方案后的样子。<br />
+      三块预演用的都是<strong>真实结构与真实排版比例</strong>（等比缩放），不是示意图；点任意一块可放大看细节。
+    </p>
+  </header>
 
   <!-- ============================================================
-       封面页：全屏居中 · 渐变星光背景
-       文案全部留空，由 main.js 从 storyData.json 注入
+       风格切换胶囊（由 gallery.js 依据 STYLES 渲染）
        ============================================================ -->
-  <section class="cover is-hidden" id="cover">
-    <div class="cover__bg" aria-hidden="true">
-      <span class="cover__stars"></span>
-      <span class="cover__glow cover__glow--a"></span>
-      <span class="cover__glow cover__glow--b"></span>
-      <span class="cover__beam"></span>
-      <!-- 流星雨：每条流星一个 <i>，位置 / 速度 / 疏密全部由 CSS 控制，无需 JS -->
-      <span class="cover__meteors">
-        <i></i><i></i><i></i><i></i><i></i><i></i>
-        <i></i><i></i><i></i><i></i><i></i><i></i>
-      </span>
-      <span class="cover__grain"></span>
-    </div>
+  <nav class="tabs" id="tabs" aria-label="风格切换"></nav>
 
-    <div class="cover__inner">
-      <p class="cover__kicker" id="coverKicker"></p>
-      <h1 class="cover__title" id="coverTitle"></h1>
-      <span class="cover__rule" aria-hidden="true"></span>
-      <p class="cover__intro" id="coverIntro"></p>
-      <button class="btn btn--primary" id="startBtn" type="button"></button>
-      <p class="cover__hint" id="coverHint"></p>
+  <!-- ============================================================
+       当前风格说明
+       ============================================================ -->
+  <section class="meta" id="meta">
+    <h2 class="meta__name" id="metaName"></h2>
+    <p class="meta__tagline" id="metaTagline"></p>
+    <dl class="meta__facts">
+      <div><dt>适用场景</dt><dd id="metaUse"></dd></div>
+      <div><dt>视觉关键词</dt><dd id="metaKeys"></dd></div>
+    </dl>
+  </section>
+
+  <!-- ============================================================
+       ★ 预演区
+       结构只写一次，切换风格 = 换掉 pv-root 上的 data-style，
+       全部颜色 / 字体 / 圆角 / 装饰都由 styles.css 里的作用域变量接管
+       ============================================================ -->
+  <main class="pv-root" id="pvRoot" data-style="night">
+
+    <!-- ① 封面启动页 -->
+    <figure class="pv" data-surface="cover" data-h="720" tabindex="0" role="button" aria-label="放大封面预演">
+      <div class="pv__clip">
+        <div class="pv__scale">
+          <div class="s-cover">
+            <span class="deco"></span>
+            <span class="deco2"></span>
+            <p class="s-cover__kicker" id="pvKicker"></p>
+            <h3 class="s-cover__title" id="pvTitle"></h3>
+            <span class="s-cover__rule"></span>
+            <p class="s-cover__intro" id="pvIntro"></p>
+            <span class="s-cover__btn" id="pvBtn"></span>
+            <p class="s-cover__hint" id="pvHint"></p>
+          </div>
+        </div>
+      </div>
+      <figcaption class="pv__cap"><b>封面启动页</b><span>点击放大</span></figcaption>
+    </figure>
+
+    <!-- ② 长卷漫游主场景（鼠标悬停可左右平移，体验跟手感） -->
+    <figure class="pv" data-surface="scroll" data-h="500" tabindex="0" role="button" aria-label="放大长卷预演">
+      <div class="pv__clip">
+        <div class="pv__scale">
+          <div class="s-stage">
+            <div class="s-scene" id="pvScene">
+              <span class="s-sky"></span>
+              <span class="deco"></span>
+              <!-- 落日在山脊之前：让远山挡住日轮下缘，符合真实遮挡关系 -->
+              <span class="s-sun"></span>
+              <span class="s-ridge s-ridge--far"></span>
+              <span class="s-ridge s-ridge--mid"></span>
+              <span class="s-ridge s-ridge--near"></span>
+              <!-- 热点标记放在画卷内部，这样它会随画卷一起平移 -->
+              <div class="s-spot" id="pvSpot">
+                <span class="s-spot__badge">01</span>
+                <span class="s-spot__label" id="pvSpotLabel"></span>
+              </div>
+              <span class="deco2"></span>
+            </div>
+            <div class="s-topbar">
+              <span class="s-topbar__dot"></span>
+              <span class="s-topbar__title" id="pvWorldTitle"></span>
+              <span class="s-topbar__progress" id="pvProgress"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption class="pv__cap"><b>长卷漫游场景</b><span>悬停可平移 · 点击放大</span></figcaption>
+    </figure>
+
+    <!-- ③ 底部文本面板 -->
+    <figure class="pv" data-surface="panel" data-h="180" tabindex="0" role="button" aria-label="放大文本面板预演">
+      <div class="pv__clip">
+        <div class="pv__scale">
+          <div class="s-panel">
+            <span class="deco"></span>
+            <span class="deco2"></span>
+            <div class="s-panel__head">
+              <span class="s-panel__scene" id="pvSceneTag"></span>
+              <span class="s-panel__name" id="pvSpotName"></span>
+            </div>
+            <!-- 打字机光标由 JS 追加到叙事段末尾，保证它紧跟文字 -->
+            <p class="s-panel__narrative" id="pvNarrative"></p>
+            <!--
+              tiprow 兼容层：
+              其余 5 套用 display:contents 让这层在布局上「不存在」；
+              应急方案用它把「AI 科普」徽章与科普文字横向排开。
+            -->
+            <div class="s-panel__tiprow">
+              <span class="s-panel__badge" id="pvTipBadge"></span>
+              <p class="s-panel__tip" id="pvTip"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figcaption class="pv__cap"><b>底部文本面板</b><span>打字机输出区 · 点击放大</span></figcaption>
+    </figure>
+  </main>
+
+  <!-- ============================================================
+       Token 面板：色板直接读 CSS 计算值，不在 JS 里重复写一遍颜色
+       ============================================================ -->
+  <section class="tokens">
+    <h2 class="tokens__title">设计 Token</h2>
+    <div class="tokens__grid">
+      <div class="tokens__block">
+        <p class="tokens__label">色板</p>
+        <div class="swatches" id="swatches"></div>
+      </div>
+      <div class="tokens__block">
+        <p class="tokens__label">字体与形状</p>
+        <table class="typo" id="typo"></table>
+      </div>
     </div>
   </section>
 
   <!-- ============================================================
-       漫游主场景：一片星空，八颗星点由星轨相连
+       底部固定操作栏：选定方案 + 导出 token
        ============================================================ -->
-  <main class="world is-hidden" id="world">
-
-    <!-- —— 星图：远层星场 + 近层星座，两层以不同系数随鼠标漂移 —— -->
-    <section class="sky" id="sky">
-      <div class="sky__drift sky__drift--far" id="driftFar" aria-hidden="true">
-        <span class="sky__stars sky__stars--far"></span>
-        <span class="sky__stars sky__stars--near"></span>
-        <span class="sky__glow sky__glow--a"></span>
-        <span class="sky__glow sky__glow--b"></span>
-      </div>
-
-      <div class="sky__drift sky__drift--near" id="driftNear">
-        <!-- 星轨：viewBox 用 0-100 百分比坐标，线条由 JS 依 star.x / star.y 生成 -->
-        <svg class="trails" id="trails" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
-        <!-- 星点：由 JS 依 storyData.spots 生成 -->
-        <div class="stars" id="stars"></div>
-      </div>
-
-      <span class="sky__grain" aria-hidden="true"></span>
-    </section>
-
-    <!-- —— HUD：左上标题 + 右上进度 —— -->
-    <div class="hud">
-      <span class="hud__title" id="worldTitle"></span>
-      <span class="hud__progress" id="progressText"></span>
+  <footer class="bar">
+    <div class="bar__state">
+      <span class="bar__label">当前查看</span>
+      <b class="bar__now" id="barNow"></b>
+      <span class="bar__picked" id="barPicked"></span>
     </div>
-
-    <!-- —— 底部毛玻璃文字面板（移动端变抽屉）—— -->
-    <section class="panel" id="panel">
-      <span class="panel__handle" id="panelHandle" role="button" tabindex="0" aria-label="展开或收起文字面板"></span>
-      <header class="panel__head">
-        <span class="panel__scene" id="panelScene"></span>
-        <span class="panel__name" id="panelName"></span>
-        <span class="panel__chevron" aria-hidden="true"></span>
-      </header>
-      <div class="panel__body">
-        <div class="panel__inner">
-          <!-- 叙事：40ms/字逐字写入，末尾带闪烁下划线光标 -->
-          <p class="panel__narrative" id="lineNarrative"></p>
-          <!-- 科普：叙事结束后整体出现（平切，不做淡入） -->
-          <div class="panel__tipbox" id="tipBox">
-            <span class="panel__badge" id="tipBadge"></span>
-            <p class="panel__tip" id="lineTip"></p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- —— 底部应急蓝细进度条 —— -->
-    <div class="railbar" aria-hidden="true"><span class="railbar__fill" id="progressBar"></span></div>
-
-    <!-- —— 大图片卡片：从被点击的星点位置弹性弹出，点任意处关闭 —— -->
-    <div class="bigcard is-hidden" id="bigcard" role="dialog" aria-modal="true" aria-label="点位图片">
-      <div class="bigcard__mask" aria-hidden="true"></div>
-      <figure class="bigcard__card" id="bigcardCard">
-        <img class="bigcard__img" id="bigcardImg" alt="" />
-        <div class="bigcard__ph is-hidden" id="bigcardPh">
-          <span class="bigcard__phtext" id="bigcardPhText"></span>
-        </div>
-      </figure>
+    <div class="bar__acts">
+      <button class="gbtn gbtn--ghost" id="copyBtn" type="button">复制 Token</button>
+      <button class="gbtn" id="pickBtn" type="button">采用这套</button>
     </div>
-  </main>
+  </footer>
 
   <!-- ============================================================
-       结尾总结：8 颗星全部点亮后居中弹出，标题与正文逐字打出
+       放大预览层
        ============================================================ -->
-  <div class="ending is-hidden" id="ending">
-    <div class="ending__mask" aria-hidden="true"></div>
-    <div class="ending__card" role="dialog" aria-modal="true" aria-labelledby="endingTitle">
-      <p class="ending__kicker" id="endingKicker"></p>
-      <h2 class="ending__title" id="endingTitle"></h2>
-      <div class="ending__body" id="endingBody"></div>
-      <button class="btn btn--ghost" id="restartBtn" type="button"></button>
+  <div class="lb is-off" id="lb">
+    <div class="lb__mask" id="lbMask"></div>
+    <div class="lb__inner">
+      <div class="lb__head">
+        <b id="lbTitle"></b>
+        <button class="gbtn gbtn--ghost gbtn--sm" id="lbClose" type="button">关闭 ESC</button>
+      </div>
+      <div class="lb__body" id="lbBody"></div>
     </div>
   </div>
 
-  <!-- ========== 错误层：storyData.json 读取失败时（如 file:// 直开） ========== -->
-  <div class="fatal is-hidden" id="fatal">
-    <div class="fatal__card">
-      <h2 class="fatal__title" id="fatalTitle"></h2>
-      <p class="fatal__msg" id="fatalMsg"></p>
-      <pre class="fatal__code" id="fatalCode"></pre>
-    </div>
-  </div>
-
-  <script src="./main.js"></script>
+  <script src="./gallery.js"></script>
 </body>
 </html>
